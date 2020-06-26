@@ -9,7 +9,7 @@ A class mediator to truncate selected part of a JSON payload
     <target>
         <inSequence>
             <class name="org.wso2.sample.TruncateJSON">
-                <property name="jsonPathString" value="store.book.[0]"/>
+                <property name="jsonPathString" value="$.store.book[0],$.store.book[*].author,$.expensive"/>
             </class>
             <respond/>
         </inSequence>

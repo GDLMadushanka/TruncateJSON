@@ -41,17 +41,23 @@ public class TruncateJSON extends AbstractMediator {
             try {
                 String jsonString = IOUtils.toString(JsonUtil.getJsonPayload(axis2MessageContext));
                 if (!StringUtils.isEmpty(jsonString)) {
-                    DocumentContext doc = JsonPath.parse(jsonString);
-                    String jsonPath = getJsonPathString();
-                    if (jsonPath.startsWith("json-eval(")) {
-                        jsonPath = jsonPath.substring(10, jsonPath.length() - 1);
-                    }
-                    try {
-                        doc.delete(jsonPath);
-                        JsonUtil.getNewJsonPayload(axis2MessageContext, doc.jsonString(), true, true);
+                    String result = jsonString;
+                    String[] jsonPathArray = getJsonPathString().split(",");
+                    if (jsonPathArray.length > 0) {
+                        for (String jsonPath : jsonPathArray) {
+                            if (jsonPath.startsWith("json-eval(")) {
+                                jsonPath = jsonPath.substring(10, jsonPath.length() - 1);
+                            }
+                            try {
+                                DocumentContext doc = JsonPath.parse(result);
+                                doc.delete(jsonPath);
+                                result = doc.jsonString();
+                            } catch (PathNotFoundException ex) {
+                                logger.error("Error occurred while reading the JSON payload ", ex);
+                            }
+                        }
+                        JsonUtil.getNewJsonPayload(axis2MessageContext, result, true, true);
                         return true;
-                    } catch (PathNotFoundException ex) {
-                        logger.error("Error occurred while reading the JSON payload ", ex);
                     }
                     // setting the payload as it is when an error occurs.
                     JsonUtil.getNewJsonPayload(axis2MessageContext, jsonString, true, true);
