@@ -19,5 +19,5 @@ A class mediator to truncate selected part of a JSON payload
 ```
 # Invoke
 
-![Screenshot](Screenshot from 2020-06-25 11-12-55.png)
+![Screenshot](Screenshot.png)
 
